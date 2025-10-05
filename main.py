@@ -239,6 +239,24 @@ class ModernProcessMonitorApp:
     
     def create_process_card(self, process):
         """Create a compact process card"""
+        theme_mode = settings_manager.get_theme_mode()
+        
+        # Theme-based colors
+        if theme_mode == "dark":
+            bg_color = ft.Colors.GREY_800
+            text_color = ft.Colors.WHITE
+            secondary_text_color = ft.Colors.GREY_300
+            border_color = ft.Colors.GREY_600
+            icon_bg = ft.Colors.BLUE_900
+            shadow_color = ft.Colors.BLACK50
+        else:
+            bg_color = ft.Colors.WHITE
+            text_color = ft.Colors.GREY_800
+            secondary_text_color = ft.Colors.GREY_600
+            border_color = ft.Colors.GREY_200
+            icon_bg = ft.Colors.BLUE_50
+            shadow_color = ft.Colors.BLACK12
+        
         return ft.Container(
             content=ft.Column([
                 ft.Row([
@@ -248,7 +266,7 @@ class ModernProcessMonitorApp:
                             color=ft.Colors.BLUE_600,
                             size=16
                         ),
-                        bgcolor=ft.Colors.BLUE_50,
+                        bgcolor=icon_bg,
                         padding=ft.padding.all(6),
                         border_radius=6
                     ),
@@ -257,12 +275,12 @@ class ModernProcessMonitorApp:
                             process['name'][:18] + "..." if len(process['name']) > 18 else process['name'],
                             size=13,
                             weight=ft.FontWeight.BOLD,
-                            color=ft.Colors.GREY_800
+                            color=text_color
                         ),
                         ft.Text(
                             f"PID: {process['pid']}",
                             size=10,
-                            color=ft.Colors.GREY_600
+                            color=secondary_text_color
                         )
                     ], expand=True),
                     ft.Column([
@@ -275,7 +293,7 @@ class ModernProcessMonitorApp:
                         ft.Text(
                             "CPU",
                             size=8,
-                            color=ft.Colors.GREY_600
+                            color=secondary_text_color
                         )
                     ]),
                     ft.Column([
@@ -288,19 +306,19 @@ class ModernProcessMonitorApp:
                         ft.Text(
                             "RAM",
                             size=8,
-                            color=ft.Colors.GREY_600
+                            color=secondary_text_color
                         )
                     ])
                 ], spacing=6),
             ], spacing=2),
-            bgcolor=ft.Colors.WHITE,
+            bgcolor=bg_color,
             padding=ft.padding.all(6),
             border_radius=6,
-            border=ft.border.all(1, ft.Colors.GREY_200),
+            border=ft.border.all(1, border_color),
             shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=2,
-                color=ft.Colors.BLACK12,
+                color=shadow_color,
                 offset=ft.Offset(0, 1)
             ),
             height=70,
@@ -312,6 +330,24 @@ class ModernProcessMonitorApp:
         start_time = datetime.fromisoformat(record['start_time'])
         end_time = datetime.fromisoformat(record['end_time'])
         
+        theme_mode = settings_manager.get_theme_mode()
+        
+        # Theme-based colors
+        if theme_mode == "dark":
+            bg_color = ft.Colors.GREY_800
+            text_color = ft.Colors.WHITE
+            secondary_text_color = ft.Colors.GREY_300
+            border_color = ft.Colors.GREY_600
+            icon_bg = ft.Colors.PURPLE_900
+            shadow_color = ft.Colors.BLACK50
+        else:
+            bg_color = ft.Colors.WHITE
+            text_color = ft.Colors.GREY_800
+            secondary_text_color = ft.Colors.GREY_600
+            border_color = ft.Colors.GREY_200
+            icon_bg = ft.Colors.PURPLE_50
+            shadow_color = ft.Colors.BLACK12
+        
         return ft.Container(
             content=ft.Column([
                 ft.Row([
@@ -321,7 +357,7 @@ class ModernProcessMonitorApp:
                             color=ft.Colors.PURPLE_600,
                             size=16
                         ),
-                        bgcolor=ft.Colors.PURPLE_50,
+                        bgcolor=icon_bg,
                         padding=ft.padding.all(6),
                         border_radius=6
                     ),
@@ -330,12 +366,12 @@ class ModernProcessMonitorApp:
                             record['name'][:18] + "..." if len(record['name']) > 18 else record['name'],
                             size=13,
                             weight=ft.FontWeight.BOLD,
-                            color=ft.Colors.GREY_800
+                            color=text_color
                         ),
                         ft.Text(
                             f"PID: {record['pid']}",
                             size=10,
-                            color=ft.Colors.GREY_600
+                            color=secondary_text_color
                         )
                     ], expand=True),
                     ft.Column([
@@ -348,7 +384,7 @@ class ModernProcessMonitorApp:
                         ft.Text(
                             "Duration",
                             size=8,
-                            color=ft.Colors.GREY_600
+                            color=secondary_text_color
                         )
                     ])
                 ], spacing=6),
@@ -356,23 +392,23 @@ class ModernProcessMonitorApp:
                     ft.Text(
                         f"Start: {start_time.strftime('%H:%M:%S')}",
                         size=9,
-                        color=ft.Colors.GREY_600
+                        color=secondary_text_color
                     ),
                     ft.Text(
                         f"End: {end_time.strftime('%H:%M:%S')}",
                         size=9,
-                        color=ft.Colors.GREY_600
+                        color=secondary_text_color
                     )
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
             ], spacing=2),
-            bgcolor=ft.Colors.WHITE,
+            bgcolor=bg_color,
             padding=ft.padding.all(6),
             border_radius=6,
-            border=ft.border.all(1, ft.Colors.GREY_200),
+            border=ft.border.all(1, border_color),
             shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=2,
-                color=ft.Colors.BLACK12,
+                color=shadow_color,
                 offset=ft.Offset(0, 1)
             ),
             height=80,
@@ -407,12 +443,9 @@ class ModernProcessMonitorApp:
         )
         
         # Color Picker
-        color_picker = ft.TextField(
-            label="Program Color",
-            hint_text="Hex color code (e.g., #2196F3)",
+        color_picker = ft.ColorPicker(
             value=settings_manager.get("program_color"),
-            on_change=self.on_color_change,
-            width=300
+            on_change=self.on_color_change
         )
         
         # Startup Settings
@@ -465,59 +498,57 @@ class ModernProcessMonitorApp:
             on_click=self.reset_settings
         )
         
+        theme_mode = settings_manager.get_theme_mode()
+        
+        # Theme-based colors
+        if theme_mode == "dark":
+            bg_color = ft.Colors.GREY_900
+            text_color = ft.Colors.WHITE
+            secondary_text_color = ft.Colors.GREY_300
+        else:
+            bg_color = ft.Colors.WHITE
+            text_color = ft.Colors.GREY_800
+            secondary_text_color = ft.Colors.GREY_600
+        
         return ft.Container(
             content=ft.Column([
                 ft.Text(
                     "Application Settings",
                     size=20,
                     weight=ft.FontWeight.BOLD,
-                    color=ft.Colors.GREY_800
+                    color=text_color
                 ),
                 
                 ft.Divider(),
                 
-                # Theme Section
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("Theme Settings", size=16, weight=ft.FontWeight.BOLD),
-                        ft.Text("Customize the appearance of the application", size=12, color=ft.Colors.GREY_600),
-                        theme_dropdown,
-                        color_picker
-                    ], spacing=8),
-                    padding=ft.padding.all(16),
-                    bgcolor=ft.Colors.BLUE_50,
-                    border_radius=8,
-                    border=ft.border.all(1, ft.Colors.BLUE_200)
-                ),
+                # All settings in single column
+                ft.Text("Program Theme", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Choose your preferred theme", size=12, color=secondary_text_color),
+                theme_dropdown,
                 
-                # Startup Section
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("Startup Settings", size=16, weight=ft.FontWeight.BOLD),
-                        ft.Text("Configure how the application starts with Windows", size=12, color=ft.Colors.GREY_600),
-                        auto_start_switch,
-                        start_minimized_switch
-                    ], spacing=8),
-                    padding=ft.padding.all(16),
-                    bgcolor=ft.Colors.GREEN_50,
-                    border_radius=8,
-                    border=ft.border.all(1, ft.Colors.GREEN_200)
-                ),
+                ft.Text("Program Color", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Select the primary color for the application", size=12, color=secondary_text_color),
+                color_picker,
                 
-                # Logging Section
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("Logging Settings", size=16, weight=ft.FontWeight.BOLD),
-                        ft.Text("Configure where and how process data is logged", size=12, color=ft.Colors.GREY_600),
-                        log_directory_field,
-                        log_filename_field,
-                        refresh_interval_field
-                    ], spacing=8),
-                    padding=ft.padding.all(16),
-                    bgcolor=ft.Colors.PURPLE_50,
-                    border_radius=8,
-                    border=ft.border.all(1, ft.Colors.PURPLE_200)
-                ),
+                ft.Text("Run When Windows Starts", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Automatically start the application when Windows boots", size=12, color=secondary_text_color),
+                auto_start_switch,
+                
+                ft.Text("Start Minimized", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Start the application minimized if auto-start is enabled", size=12, color=secondary_text_color),
+                start_minimized_switch,
+                
+                ft.Text("Log Directory", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Directory where log files will be stored", size=12, color=secondary_text_color),
+                log_directory_field,
+                
+                ft.Text("Log Filename", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("Name of the main log file", size=12, color=secondary_text_color),
+                log_filename_field,
+                
+                ft.Text("Refresh Interval", size=16, weight=ft.FontWeight.BOLD, color=text_color),
+                ft.Text("How often to refresh process data (in seconds)", size=12, color=secondary_text_color),
+                refresh_interval_field,
                 
                 # Actions
                 ft.Row([
@@ -526,7 +557,8 @@ class ModernProcessMonitorApp:
                 ], alignment=ft.MainAxisAlignment.START)
                 
             ], spacing=16, scroll=ft.ScrollMode.AUTO),
-            padding=ft.padding.all(16)
+            padding=ft.padding.all(16),
+            bgcolor=bg_color
         )
     
     def create_tabs(self):
@@ -624,16 +656,25 @@ class ModernProcessMonitorApp:
         """Create the main UI"""
         self.page = page
         
+        # Calculate optimal width for 4 cards
+        # Card width: 220px, spacing: 8px, padding: 16px * 2, margin: 12px * 2
+        optimal_width = (220 * 4) + (8 * 3) + (16 * 2) + (12 * 2) + 20  # ~960px
+        
         # Set page properties
         page.title = GUI_TITLE
         theme_mode = settings_manager.get_theme_mode()
         page.theme_mode = getattr(ft.ThemeMode, theme_mode.upper())
-        page.window_width = settings_manager.get("window_width", 1000)
+        page.window_width = optimal_width
         page.window_height = settings_manager.get("window_height", 700)
         page.window_min_width = 800
         page.window_min_height = 600
         page.padding = 0
-        page.bgcolor = ft.Colors.GREY_100
+        
+        # Set theme-based background
+        if theme_mode == "dark":
+            page.bgcolor = ft.Colors.GREY_900
+        else:
+            page.bgcolor = ft.Colors.GREY_100
         
         # Set Poppins font
         page.fonts = {
@@ -790,7 +831,7 @@ class ModernProcessMonitorApp:
     def on_color_change(self, e):
         """Handle color change"""
         color = e.control.value
-        if color and color.startswith('#'):
+        if color:
             settings_manager.set("program_color", color)
     
     def on_auto_start_change(self, e):
