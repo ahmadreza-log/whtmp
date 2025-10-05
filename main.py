@@ -13,6 +13,7 @@ from config import (
     AUTO_REFRESH_INTERVAL, MAX_DISPLAY_PROCESSES, MAX_DISPLAY_HISTORY,
     GUI_TITLE, WINDOW_SIZE, WINDOW_BACKGROUND
 )
+from settings import settings_manager
 
 class ProcessMonitor:
     def __init__(self):
@@ -23,30 +24,67 @@ class ProcessMonitor:
     def load_data(self):
         """Load existing process data from file"""
         try:
+            log_file_path = settings_manager.get_log_file_path()
             # Ensure logs directory exists
-            os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+            os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
             
-            if os.path.exists(DATA_FILE):
-                with open(DATA_FILE, 'r') as f:
-                    data = json.load(f)
-                    self.process_history = data.get('history', [])
-                    print(f"Loaded {len(self.process_history)} existing records")
+            # Try to load from new text format first, then fallback to JSON
+            if os.path.exists(log_file_path):
+                try:
+                    # For now, we'll keep the JSON format for loading existing data
+                    # In future versions, we can implement text parsing
+                    if os.path.exists(DATA_FILE):
+                        with open(DATA_FILE, 'r') as f:
+                            data = json.load(f)
+                            self.process_history = data.get('history', [])
+                            print(f"Loaded {len(self.process_history)} existing records")
+                except:
+                    self.process_history = []
+            else:
+                # Try old JSON file as fallback
+                if os.path.exists(DATA_FILE):
+                    with open(DATA_FILE, 'r') as f:
+                        data = json.load(f)
+                        self.process_history = data.get('history', [])
+                        print(f"Loaded {len(self.process_history)} existing records from old format")
         except Exception as e:
             print(f"Error loading data: {e}")
             self.process_history = []
     
     def save_data(self):
-        """Save process data to file"""
+        """Save process data to file in text table format"""
         try:
+            log_file_path = settings_manager.get_log_file_path()
             # Ensure logs directory exists
-            os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+            os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
             
-            data = {
-                'history': self.process_history,
-                'last_updated': datetime.now().isoformat()
-            }
-            with open(DATA_FILE, 'w') as f:
-                json.dump(data, f, indent=2)
+            # Create text table format
+            with open(log_file_path, 'w', encoding='utf-8') as f:
+                f.write("=" * 120 + "\n")
+                f.write("PROCESS MONITOR LOG\n")
+                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write("=" * 120 + "\n\n")
+                
+                if self.process_history:
+                    f.write("PROCESS HISTORY:\n")
+                    f.write("-" * 120 + "\n")
+                    f.write(f"{'Process Name':<30} {'PID':<8} {'Start Time':<20} {'End Time':<20} {'Duration':<15} {'Status':<10}\n")
+                    f.write("-" * 120 + "\n")
+                    
+                    for record in self.process_history:
+                        start_time = datetime.fromisoformat(record['start_time']).strftime('%Y-%m-%d %H:%M:%S')
+                        end_time = datetime.fromisoformat(record['end_time']).strftime('%Y-%m-%d %H:%M:%S')
+                        duration = record['duration']
+                        name = record['name'][:29]  # Truncate if too long
+                        
+                        f.write(f"{name:<30} {record['pid']:<8} {start_time:<20} {end_time:<20} {duration:<15} {'Completed':<10}\n")
+                    
+                    f.write("-" * 120 + "\n")
+                    f.write(f"Total Records: {len(self.process_history)}\n")
+                else:
+                    f.write("No process history available.\n")
+                
+                f.write("\n" + "=" * 120 + "\n")
         except Exception as e:
             print(f"Error saving data: {e}")
     
@@ -116,7 +154,7 @@ class ModernProcessMonitorApp:
         self.page = None
         self.monitoring_thread = None
         self.is_monitoring = False
-        self.auto_refresh_interval = AUTO_REFRESH_INTERVAL
+        self.auto_refresh_interval = settings_manager.get("refresh_interval", AUTO_REFRESH_INTERVAL)
         
         # UI Controls
         self.process_grid = None
@@ -352,6 +390,145 @@ class ModernProcessMonitorApp:
             run_spacing=8
         )
     
+    def create_settings_tab(self):
+        """Create settings tab with all configuration options"""
+        # Theme Settings
+        theme_dropdown = ft.Dropdown(
+            label="Program Theme",
+            hint_text="Choose your preferred theme",
+            value=settings_manager.get("theme"),
+            options=[
+                ft.dropdown.Option("Light", "Light Theme"),
+                ft.dropdown.Option("Dark", "Dark Theme"),
+                ft.dropdown.Option("System", "Follow System Theme")
+            ],
+            on_change=self.on_theme_change,
+            width=300
+        )
+        
+        # Color Picker
+        color_picker = ft.TextField(
+            label="Program Color",
+            hint_text="Hex color code (e.g., #2196F3)",
+            value=settings_manager.get("program_color"),
+            on_change=self.on_color_change,
+            width=300
+        )
+        
+        # Startup Settings
+        auto_start_switch = ft.Switch(
+            label="Run When Windows Starts",
+            value=settings_manager.get("run_on_windows_start"),
+            on_change=self.on_auto_start_change
+        )
+        
+        start_minimized_switch = ft.Switch(
+            label="Start Minimized (if auto-start is enabled)",
+            value=settings_manager.get("start_minimized"),
+            on_change=self.on_start_minimized_change
+        )
+        
+        # Log Settings
+        log_directory_field = ft.TextField(
+            label="Log Directory",
+            hint_text="Directory for log files",
+            value=settings_manager.get("log_directory"),
+            on_change=self.on_log_directory_change,
+            width=300
+        )
+        
+        log_filename_field = ft.TextField(
+            label="Log Filename",
+            hint_text="Name of the log file",
+            value=settings_manager.get("log_filename"),
+            on_change=self.on_log_filename_change,
+            width=300
+        )
+        
+        # Refresh Interval
+        refresh_interval_field = ft.TextField(
+            label="Refresh Interval (seconds)",
+            hint_text="How often to refresh process data",
+            value=str(settings_manager.get("refresh_interval")),
+            on_change=self.on_refresh_interval_change,
+            width=300
+        )
+        
+        # Reset Button
+        reset_button = ft.ElevatedButton(
+            "Reset to Defaults",
+            icon=ft.Icons.RESTORE,
+            style=ft.ButtonStyle(
+                bgcolor=ft.Colors.ORANGE_600,
+                color=ft.Colors.WHITE
+            ),
+            on_click=self.reset_settings
+        )
+        
+        return ft.Container(
+            content=ft.Column([
+                ft.Text(
+                    "Application Settings",
+                    size=20,
+                    weight=ft.FontWeight.BOLD,
+                    color=ft.Colors.GREY_800
+                ),
+                
+                ft.Divider(),
+                
+                # Theme Section
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text("Theme Settings", size=16, weight=ft.FontWeight.BOLD),
+                        ft.Text("Customize the appearance of the application", size=12, color=ft.Colors.GREY_600),
+                        theme_dropdown,
+                        color_picker
+                    ], spacing=8),
+                    padding=ft.padding.all(16),
+                    bgcolor=ft.Colors.BLUE_50,
+                    border_radius=8,
+                    border=ft.border.all(1, ft.Colors.BLUE_200)
+                ),
+                
+                # Startup Section
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text("Startup Settings", size=16, weight=ft.FontWeight.BOLD),
+                        ft.Text("Configure how the application starts with Windows", size=12, color=ft.Colors.GREY_600),
+                        auto_start_switch,
+                        start_minimized_switch
+                    ], spacing=8),
+                    padding=ft.padding.all(16),
+                    bgcolor=ft.Colors.GREEN_50,
+                    border_radius=8,
+                    border=ft.border.all(1, ft.Colors.GREEN_200)
+                ),
+                
+                # Logging Section
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text("Logging Settings", size=16, weight=ft.FontWeight.BOLD),
+                        ft.Text("Configure where and how process data is logged", size=12, color=ft.Colors.GREY_600),
+                        log_directory_field,
+                        log_filename_field,
+                        refresh_interval_field
+                    ], spacing=8),
+                    padding=ft.padding.all(16),
+                    bgcolor=ft.Colors.PURPLE_50,
+                    border_radius=8,
+                    border=ft.border.all(1, ft.Colors.PURPLE_200)
+                ),
+                
+                # Actions
+                ft.Row([
+                    reset_button,
+                    ft.Container(expand=True)
+                ], alignment=ft.MainAxisAlignment.START)
+                
+            ], spacing=16, scroll=ft.ScrollMode.AUTO),
+            padding=ft.padding.all(16)
+        )
+    
     def create_tabs(self):
         """Create responsive tabs"""
         return ft.Tabs(
@@ -433,6 +610,11 @@ class ModernProcessMonitorApp:
                         ]),
                         padding=ft.padding.all(16)
                     )
+                ),
+                ft.Tab(
+                    text="Settings",
+                    icon=ft.Icons.SETTINGS,
+                    content=self.create_settings_tab()
                 )
             ],
             expand=True
@@ -444,9 +626,10 @@ class ModernProcessMonitorApp:
         
         # Set page properties
         page.title = GUI_TITLE
-        page.theme_mode = ft.ThemeMode.LIGHT
-        page.window_width = 1000
-        page.window_height = 700
+        theme_mode = settings_manager.get_theme_mode()
+        page.theme_mode = getattr(ft.ThemeMode, theme_mode.upper())
+        page.window_width = settings_manager.get("window_width", 1000)
+        page.window_height = settings_manager.get("window_height", 700)
         page.window_min_width = 800
         page.window_min_height = 600
         page.padding = 0
@@ -594,6 +777,55 @@ class ModernProcessMonitorApp:
                 self.page.update()
         except Exception as e:
             print(f"Error updating UI: {e}")
+    
+    # Settings event handlers
+    def on_theme_change(self, e):
+        """Handle theme change"""
+        settings_manager.set("theme", e.control.value)
+        # Apply theme immediately
+        theme_mode = settings_manager.get_theme_mode()
+        self.page.theme_mode = getattr(ft.ThemeMode, theme_mode.upper())
+        self.page.update()
+    
+    def on_color_change(self, e):
+        """Handle color change"""
+        color = e.control.value
+        if color and color.startswith('#'):
+            settings_manager.set("program_color", color)
+    
+    def on_auto_start_change(self, e):
+        """Handle auto-start change"""
+        settings_manager.set("run_on_windows_start", e.control.value)
+        # TODO: Implement Windows startup integration
+    
+    def on_start_minimized_change(self, e):
+        """Handle start minimized change"""
+        settings_manager.set("start_minimized", e.control.value)
+    
+    def on_log_directory_change(self, e):
+        """Handle log directory change"""
+        settings_manager.set("log_directory", e.control.value)
+    
+    def on_log_filename_change(self, e):
+        """Handle log filename change"""
+        settings_manager.set("log_filename", e.control.value)
+    
+    def on_refresh_interval_change(self, e):
+        """Handle refresh interval change"""
+        try:
+            interval = float(e.control.value)
+            if interval > 0:
+                settings_manager.set("refresh_interval", interval)
+                self.auto_refresh_interval = interval
+        except ValueError:
+            pass  # Invalid input, ignore
+    
+    def reset_settings(self, e):
+        """Reset all settings to defaults"""
+        settings_manager.reset_to_defaults()
+        # Refresh the page to show default values
+        self.page.go("/")
+        self.page.update()
 
 def main(page: ft.Page):
     """Main application entry point"""

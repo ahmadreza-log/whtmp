@@ -126,6 +126,9 @@ debug.log
 # Logs directory
 logs/
 
+# Settings file
+settings.json
+
 # Old files (removed)
 gui.py
 ui_kit.py
