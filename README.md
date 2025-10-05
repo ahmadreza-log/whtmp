@@ -31,12 +31,17 @@ pip install -r requirements.txt
 
 3. **Run the application:**
 ```bash
+# Command line version
 python main.py
+
+# GUI version
+python gui.py
 ```
 
 ## 📖 Usage
 
-After running the application, the following menu will be displayed:
+### Command Line Version
+After running `python main.py`, the following menu will be displayed:
 
 ```
 📋 Main Menu:
@@ -46,12 +51,19 @@ After running the application, the following menu will be displayed:
 4. 🛑 Exit
 ```
 
-### Menu Options:
+### GUI Version
+After running `python gui.py`, a graphical interface will open with:
 
-1. **Start Monitoring**: Begins the monitoring process
-2. **Show Current Status**: Displays currently running applications
-3. **Show Historical Statistics**: Shows comprehensive usage statistics
-4. **Exit**: Exits the application
+- **📋 Current Processes Tab**: Shows currently running applications
+- **📊 Process History Tab**: Displays historical process data
+- **📈 Statistics Tab**: Shows usage statistics and analytics
+- **📝 Log Tab**: Real-time monitoring log
+
+#### GUI Controls:
+- **🚀 Start/Stop Monitoring**: Toggle monitoring on/off
+- **🔄 Refresh**: Update current process list
+- **💾 Save Log**: Save data to log file
+- **Status Indicator**: Shows monitoring status
 
 ## 📁 Output Files
 
