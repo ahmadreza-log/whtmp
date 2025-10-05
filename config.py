@@ -1,4 +1,4 @@
-# Configuration file for Process Monitor
+# Modern Process Monitor Configuration
 
 # Development/Production mode
 DEVELOPMENT_MODE = True  # Set to False for production
@@ -10,12 +10,15 @@ DEBUG_CONSOLE_OUTPUT = DEVELOPMENT_MODE
 
 # Application settings
 CHECK_INTERVAL = 2  # seconds
-LOG_FILE = "process_log.json"
-GUI_TITLE = "Windows Process Monitor"
+DATA_FILE = "process_log.json"
+GUI_TITLE = "Modern Process Monitor"
 
 # GUI settings
 WINDOW_SIZE = "1000x700"
-WINDOW_BACKGROUND = "#f0f0f0"
+WINDOW_BACKGROUND = "#f5f5f5"
+AUTO_REFRESH_INTERVAL = 2.0
+MAX_DISPLAY_PROCESSES = 50
+MAX_DISPLAY_HISTORY = 20
 
 # Process filtering
 EXCLUDE_SYSTEM_PROCESSES = True

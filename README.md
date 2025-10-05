@@ -31,39 +31,32 @@ pip install -r requirements.txt
 
 3. **Run the application:**
 ```bash
-# Command line version
+# Modern GUI version
 python main.py
 
-# GUI version
-python gui.py
+# Or use the launcher
+run.bat
 ```
 
 ## 📖 Usage
 
-### Command Line Version
-After running `python main.py`, the following menu will be displayed:
+### Modern GUI Application
+After running `python main.py` or `run.bat`, a modern, beautiful interface will open with:
 
-```
-📋 Main Menu:
-1. 🚀 Start Monitoring
-2. 📊 Show Current Status  
-3. 📈 Show Historical Statistics
-4. 🛑 Exit
-```
-
-### GUI Version
-After running `python gui.py`, a graphical interface will open with:
-
-- **📋 Current Processes Tab**: Shows currently running applications
-- **📊 Process History Tab**: Displays historical process data
+- **📋 Current Processes Tab**: Shows currently running applications with modern cards
+- **📊 Process History Tab**: Displays historical process data with visual indicators
 - **📈 Statistics Tab**: Shows usage statistics and analytics
-- **📝 Log Tab**: Real-time monitoring log
+- **📝 Log Tab**: Real-time monitoring log with modern styling
+- **🐛 Debug Tab**: Development debug information (development mode only)
 
-#### GUI Controls:
-- **🚀 Start/Stop Monitoring**: Toggle monitoring on/off
-- **🔄 Refresh**: Update current process list
-- **💾 Save Log**: Save data to log file
-- **Status Indicator**: Shows monitoring status
+#### Modern GUI Features:
+- **🚀 Start/Stop Monitoring**: Beautiful toggle button with color changes
+- **⏰ Auto Refresh**: Smart switch with real-time updates
+- **💾 Save Log**: Modern save button with success feedback
+- **📊 Status Indicator**: Color-coded status with emojis
+- **🎨 Modern Design**: Material Design inspired UI
+- **📱 Responsive**: Adapts to different window sizes
+- **⚡ Real-time**: Smooth animations and updates
 
 ## 📁 Output Files
 

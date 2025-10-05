@@ -123,6 +123,14 @@ process_log.json
 *.log
 debug.log
 
+# Old files (removed)
+gui.py
+ui_kit.py
+run_gui.bat
+install.bat
+flet_gui.py
+ui.py
+
 # IDE
 .vscode/
 .idea/
