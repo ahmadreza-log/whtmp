@@ -5,12 +5,12 @@ DEVELOPMENT_MODE = True  # Set to False for production
 
 # Debug settings
 DEBUG_ENABLED = DEVELOPMENT_MODE
-DEBUG_LOG_FILE = "debug.log"
+DEBUG_LOG_FILE = "logs/debug.log"
 DEBUG_CONSOLE_OUTPUT = DEVELOPMENT_MODE
 
 # Application settings
 CHECK_INTERVAL = 2  # seconds
-DATA_FILE = "process_log.json"
+DATA_FILE = "logs/process.log"
 GUI_TITLE = "Modern Process Monitor"
 
 # GUI settings

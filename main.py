@@ -23,6 +23,9 @@ class ProcessMonitor:
     def load_data(self):
         """Load existing process data from file"""
         try:
+            # Ensure logs directory exists
+            os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+            
             if os.path.exists(DATA_FILE):
                 with open(DATA_FILE, 'r') as f:
                     data = json.load(f)
@@ -35,6 +38,9 @@ class ProcessMonitor:
     def save_data(self):
         """Save process data to file"""
         try:
+            # Ensure logs directory exists
+            os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+            
             data = {
                 'history': self.process_history,
                 'last_updated': datetime.now().isoformat()

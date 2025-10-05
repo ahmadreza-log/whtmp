@@ -123,6 +123,9 @@ process_log.json
 *.log
 debug.log
 
+# Logs directory
+logs/
+
 # Old files (removed)
 gui.py
 ui_kit.py

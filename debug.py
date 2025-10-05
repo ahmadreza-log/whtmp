@@ -30,6 +30,9 @@ class DebugLogger:
         
         # File handler
         try:
+            # Ensure logs directory exists
+            os.makedirs(os.path.dirname(DEBUG_LOG_FILE), exist_ok=True)
+            
             file_handler = logging.FileHandler(DEBUG_LOG_FILE, encoding='utf-8')
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(formatter)
