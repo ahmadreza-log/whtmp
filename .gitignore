@@ -121,6 +121,7 @@ dmypy.json
 # Project specific
 process_log.json
 *.log
+debug.log
 
 # IDE
 .vscode/
