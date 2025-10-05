@@ -443,9 +443,14 @@ class ModernProcessMonitorApp:
         )
         
         # Color Picker
-        color_picker = ft.ColorPicker(
-            value=settings_manager.get("program_color"),
-            on_change=self.on_color_change
+        color_picker = ft.ElevatedButton(
+            "Choose Color",
+            icon=ft.Icons.PALETTE,
+            on_click=self.open_color_picker,
+            style=ft.ButtonStyle(
+                bgcolor=settings_manager.get("program_color"),
+                color=ft.Colors.WHITE
+            )
         )
         
         # Startup Settings
@@ -828,11 +833,71 @@ class ModernProcessMonitorApp:
         self.page.theme_mode = getattr(ft.ThemeMode, theme_mode.upper())
         self.page.update()
     
-    def on_color_change(self, e):
-        """Handle color change"""
-        color = e.control.value
-        if color:
-            settings_manager.set("program_color", color)
+    def open_color_picker(self, e):
+        """Open color picker dialog"""
+        def on_color_selected(color):
+            if color:
+                settings_manager.set("program_color", color)
+                # Update the button color
+                e.control.bgcolor = color
+                self.page.update()
+        
+        # Create a simple color selection dialog
+        color_dialog = ft.AlertDialog(
+            title=ft.Text("Select Color"),
+            content=ft.Column([
+                ft.Text("Choose a color:", size=16),
+                ft.Row([
+                    ft.Container(
+                        content=ft.Text("Blue", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.BLUE_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#2196F3")
+                    ),
+                    ft.Container(
+                        content=ft.Text("Green", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.GREEN_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#4CAF50")
+                    ),
+                    ft.Container(
+                        content=ft.Text("Purple", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.PURPLE_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#9C27B0")
+                    ),
+                    ft.Container(
+                        content=ft.Text("Orange", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.ORANGE_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#FF9800")
+                    ),
+                    ft.Container(
+                        content=ft.Text("Red", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.RED_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#F44336")
+                    ),
+                    ft.Container(
+                        content=ft.Text("Teal", color=ft.Colors.WHITE),
+                        bgcolor=ft.Colors.TEAL_600,
+                        padding=ft.padding.all(12),
+                        border_radius=8,
+                        on_click=lambda _: on_color_selected("#009688")
+                    )
+                ], wrap=True, spacing=8)
+            ], tight=True),
+            actions=[
+                ft.TextButton("Cancel", on_click=lambda _: self.page.close_dialog())
+            ]
+        )
+        
+        self.page.open_dialog(color_dialog)
     
     def on_auto_start_change(self, e):
         """Handle auto-start change"""
